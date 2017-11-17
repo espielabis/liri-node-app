@@ -1,6 +1,6 @@
 //Loading modules
 var Twitter = require('twitter');
-var spotify = require('spotify');
+// var spotify = require('node-spotify-api');
 var request = require('request');
 var fs = require('fs');
 var keys = require("./keys.js");
@@ -24,13 +24,15 @@ function processCommands(command, commandParam){
 	switch(command){
 
 	case 'my-tweets':
-		getMyTweets(); break;
+		getMyTweets();
+
+					break;
 	case 'spotify-this-song':
-		//If user has not specified a song , use default
-		if(commandParam === undefined){
-			commandParam = defaultSong;
-		}
-		spotifyThis(commandParam); break;
+		//If user has not specified a song , usse default
+		// if(commandParam === undefined){
+		// 	commandParam = defaultSong;
+		// }
+		spotifyThis(); break;
 	case 'movie-this':
 		//If user has not specified a movie Name , use default
 		if(commandParam === undefined){
@@ -38,7 +40,8 @@ function processCommands(command, commandParam){
 		}
 		movieThis(commandParam); break;
 	case 'do-what-it-says':
-		doWhatItSays(); break;
+		doWhatItSays();
+		break;
 	default:
 		console.log("Please type node liri.js with the following options: my-tweets, spotify-this-song, movie-this, or do-what-it-says");
 }
@@ -58,6 +61,11 @@ function getMyTweets(){
 						console.log("Created at: " + tweetsArray[i].created_at);
 						console.log("Text: " + tweetsArray[i].text);
 						console.log('--------------------------------------');
+
+						// fs.appendFile("log.txt", "Created at: " + tweetsArray[i].created_at);
+						// fs.appendFile("log.txt", "Text: " + tweetsArray[i].text);
+						// fs.appendFile("log.txt", '--------------------------------------');
+
 					}
 				}
 				else{
@@ -68,20 +76,33 @@ function getMyTweets(){
 }
 //end function tweets
 
-function spotifyThis(song){
+function spotifyThis(){
+//
 
-var song = "Hello"
+var spotify = require('node-spotify-api');
 
-	spotify.search({type:'track', query:song}, function(err,data){
-		    if(err){
-		        console.log('Error occurred: ' + err);
-		        return;
+var spotify = new spotify({
+  id:'e6bf7692190c437e97474266854fa972',
+  secret:'ae29067dafa74dacb3738353a9948659'
+});
+// spotify.search({ type: 'track', query: 'dancing in the moonlight' }, function(err, data) {
+//   //
+var param = 'all by myself'
+spotify.search({ type: 'track', query: param}, function(err, data) {
+	if ( err ) {
+			console.log('Error occurred: ' + err);
+			return;
+
 		    }else{
-		        //tried searching for release year! Spotify doesn't return this!
-		  		console.log("Artist: " + data.tracks.items.artists.name);
-		        console.log("Song: " + data.tracks.items.name);
-		        console.log("Album: " + data.tracks.items.album.name);
-		        console.log("Preview Here: " + data.tracks.items.preview_url);
+					var songInfo = data.tracks.items[0];
+						console.log('');
+	 									console.log("Artist Name: " + songInfo.artists[0].name)
+										console.log("Song : " + songInfo.name)
+										console.log("Album: " + songInfo.album.name)
+										console.log("Preview link: " + songInfo.preview_url)
+	 // console.log(songResult);
+
+
 		    }
 		});
 	}
@@ -91,27 +112,6 @@ var song = "Hello"
 //movie-this function
 function movieThis(){
 
-	// var nodeArgs = process.argv;
-	//
-	// // Create an empty variable for holding the movie name
-	// var movieName = "";
-	//
-	// // Loop through all the words in the node argument
-	// // And do a little for-loop magic to handle the inclusion of "+"s
-	// for (var i = 2; i < nodeArgs.length; i++) {
-	//
-	//   if (i > 2 && i < nodeArgs.length) {
-	//
-	//     movieName = movieName + "+" + nodeArgs[i];
-	//
-	//   }
-	//
-	//   else {
-	//
-	//     movieName += nodeArgs[i];
-	//
-	//   }
-	// }
 
 	// Then run a request to the OMDB API with the movie specified
 	var queryUrl = "http://www.omdbapi.com/?t=" + "Titanic" + "&y=&plot=short&apikey=trilogy&tomatoes=true";
@@ -126,7 +126,9 @@ function movieThis(){
 
 	    // Parse the body of the site and recover just the imdbRating
 	    // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
-	    console.log("Release Year: " + JSON.parse(body).Year);
+
+
+			console.log("Release Year: " + JSON.parse(body).Year);
 			console.log("Title: " + JSON.parse(body).Title);
 
       console.log("IMdB Rating: " + JSON.parse(body).imdbRating);
@@ -156,23 +158,14 @@ function doWhatItSays(){
     // Print each element (item) of the array/
     console.log(output[i]);
 
+
   }
+
 });
 }
 
 //log text
 
-var writeToLog = function(data) {
-  fs.appendFile("log.txt", '\r\n\r\n');
-
-  fs.appendFile("log.txt", JSON.stringify(data), function(err) {
-    if (err) {
-      return console.log(err);
-    }
-
-    console.log("log.txt was updated!");
-  });
-}
 //end of log text
 //-------------------------MAIN PROCESS-------------------------------------------
 
