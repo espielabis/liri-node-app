@@ -87,7 +87,7 @@ var spotify = new spotify({
 });
 // spotify.search({ type: 'track', query: 'dancing in the moonlight' }, function(err, data) {
 //   //
-var param = 'all by myself'
+var param = 'all by myself';
 spotify.search({ type: 'track', query: param}, function(err, data) {
 	if ( err ) {
 			console.log('Error occurred: ' + err);
